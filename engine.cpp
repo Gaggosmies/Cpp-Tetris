@@ -164,9 +164,22 @@ bool Engine::handlePressedKey() {
                 temp = temp >> 8;
             }
 
-            // todo: check if block goes out of bounds
             if(!hasOverlap(temp, gameContainer))
             {
+                if(goneRight > 4 && hasOverlap(temp, LEFT_SIDE)) // if trying to overlap left side
+                {
+                    break;
+                }
+                else if(goneRight < 4 && hasOverlap(temp, RIGHT_SIDE)) // if trying to overlap right side
+                {
+                    break;
+                }
+                else if(hasOverlap(temp, LAST_ROW) || hasOverlap(temp, FIRST_ROW)) // trying to overlap top or bottom
+                {
+                    break;
+                }
+
+                // otherwise all good to toggle
                 blockContainer = temp;
                 isSideways = !isSideways; // toggle sideways
                 drawContainer();
