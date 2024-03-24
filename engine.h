@@ -9,8 +9,9 @@ class Engine {
 public:
     Engine();
     void start();
-    bool keyWasPressed();
+    bool handlePressedKey();
     void updateBlocks();
+
     int delay = 200; // press delay, 200 milliseconds
     int blockMovementSize = 8; // 8 bits
 
@@ -21,7 +22,7 @@ public:
 private:
     std::chrono::steady_clock::time_point lastKeyPressTime;
     long long keyPressDelay;
-    bool hasOverlap(uint64_t a, uint64_t b);
+    bool hasOverlap(uint64_t container, uint64_t bits);
     void clearBits(uint64_t& container, uint64_t bits);
     void setBits(uint64_t& container, uint64_t bits);
 };

@@ -7,8 +7,8 @@ void Engine::start() {
     blockContainer = 0x7000000000000000;
 }
 
-bool Engine::hasOverlap(uint64_t a, uint64_t b) {
-    return (a & b) != 0;
+bool Engine::hasOverlap(uint64_t container, uint64_t bits) {
+    return (container & bits) != 0;
 }
 
 void Engine::clearBits(uint64_t& container, uint64_t bits) {
@@ -29,6 +29,11 @@ void Engine::updateBlocks()
         clearBits(blockContainer, temp);
         setBits(gameContainer, temp);
         blockContainer = 0x7000000000000000;
+
+        if(hasOverlap(gameContainer, 0xFF00000000000000)) {
+            std::cout << "Game Over!" << std::endl;
+            exit(0);
+        }
     }
     else
     {
@@ -37,12 +42,13 @@ void Engine::updateBlocks()
         setBits(blockContainer, temp >> blockMovementSize);
     }
 
-    
     this->drawContainer();
 }
 
 void Engine::drawContainer()
 {
+    system ("CLS"); // Clear the console
+
     std::cout << "| ";
     for (int i = 0; i < 64; ++i) { // Loop for each bit from 0 to 63
         // Correctly extract the bit using right shift, starting from MSB to LSB
@@ -51,7 +57,7 @@ void Engine::drawContainer()
 
         if (activeBit == 1) {
             // Print 2 for active bit
-            std::cout << 2;
+            std::cout << '2';
         }
         else
         {
@@ -75,13 +81,42 @@ Engine::Engine() : keyPressDelay(Engine::delay) { // Initialize keyPressDelay an
     lastKeyPressTime = std::chrono::steady_clock::now() - std::chrono::milliseconds(keyPressDelay);
 }
 
-bool Engine::keyWasPressed() {
+bool Engine::handlePressedKey() {
     auto now = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastKeyPressTime).count();
 
     if (_kbhit() && elapsed > keyPressDelay) {
-        while (_kbhit()) _getch(); // Clear buffer
+        // Clear the buffer by reading all available characters
+        char lastChar = 0;
+        while (_kbhit()) {
+            lastChar = _getch(); // Read the next character in the buffer
+        }
         lastKeyPressTime = std::chrono::steady_clock::now();
+        
+        switch (lastChar)
+        {
+        case 'a':
+            blockContainer = blockContainer << 1;
+            drawContainer();
+            break;
+
+        case 'd':
+            blockContainer = blockContainer >> 1;
+            drawContainer();
+            break;
+
+        case 'w':  
+            // todo rotate
+            break;
+
+        case 's':   
+            updateBlocks();
+            break;
+        
+        default:
+            return false;
+            break;
+        }
         return true;
     }
     return false;
