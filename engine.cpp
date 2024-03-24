@@ -4,7 +4,7 @@
 #include <conio.h> // for _kbhit() and _getch()
 
 void Engine::start() {
-    blockContainer = 0x7000000000000000;
+    blockContainer = LEFT_SIDE;
 }
 
 bool Engine::hasOverlap(uint64_t container, uint64_t bits) {
@@ -42,7 +42,7 @@ void Engine::updateBlocks()
 
         blockContainer = BASIC_BLOCK; // new block
 
-        if(hasOverlap(gameContainer, LAST_ROW)) {
+        if(hasOverlap(gameContainer, BASIC_BLOCK)) {
             std::cout << "Game Over!" << std::endl;
             exit(0);
         }
@@ -111,17 +111,23 @@ bool Engine::handlePressedKey() {
         switch (lastChar)
         {
         case 'a':
-            blockContainer = blockContainer << 1;
-            drawContainer();
+            if(!hasOverlap(blockContainer, LEFT_SIDE) && !hasOverlap(blockContainer << 1, gameContainer))
+            {
+                blockContainer = blockContainer << 1;
+                drawContainer();
+            }
             break;
 
         case 'd':
-            blockContainer = blockContainer >> 1;
-            drawContainer();
+            if(!hasOverlap(blockContainer, RIGHT_SIDE) && !hasOverlap(blockContainer >> 1, gameContainer))
+            {
+                blockContainer = blockContainer >> 1;
+                drawContainer();
+            }
             break;
 
         case 'w':  
-            // todo rotate
+            // todo rotate block
             break;
 
         case 's':   
