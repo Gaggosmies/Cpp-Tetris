@@ -1,7 +1,7 @@
 CXX=g++
 CXXFLAGS=-std=c++17 -Wall
 TARGET=tetris
-FILES=main.cpp engine.cpp container.cpp
+FILES=main.cpp engine.cpp
 
 all: $(TARGET)
 

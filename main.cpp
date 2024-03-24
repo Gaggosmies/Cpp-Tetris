@@ -5,16 +5,22 @@
 #include <thread>
 
 int main() {
-    int blockDelay = 500; // 500 milliseconds
+    int blockDelay = 100; // 500 milliseconds
+    int blockUpdateDelay = 5; // x * blockDelay milliseconds
+    int updateBlocks = 0;
+
     Engine gameEngine;
     gameEngine.start(); // todo: implement start() method
-    Container container;
-    container.initializeContainer();
+    gameEngine.updateBlocks();
 
     while (true) {
-        // std::cout << "Pressed:" << gameEngine.keyWasPressed() << std::endl;
+        if(updateBlocks > blockUpdateDelay) {
+            system ("CLS");
+            gameEngine.updateBlocks();
+            updateBlocks = 0;
+        }
 
-        
+        updateBlocks++;
         std::this_thread::sleep_for(std::chrono::milliseconds(blockDelay)); // wait for blockDelay milliseconds
     }
 

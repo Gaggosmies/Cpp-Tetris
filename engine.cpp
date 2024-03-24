@@ -4,7 +4,40 @@
 #include <conio.h> // for _kbhit() and _getch()
 
 void Engine::start() {
-    // Implementation of start() method
+    int firstBlock[1][3] = {1};
+
+    if(firstBlock[0][4] == 0 && firstBlock[0][5] == 0 && firstBlock[0][6] == 0) {
+        containerItems[0][4] = 1;
+        containerItems[0][5] = 1;
+        containerItems[0][6] = 1;
+    }
+}
+
+void Engine::updateBlocks()
+{
+    this->drawContainer();
+}
+
+void Engine::drawContainer()
+{
+    // Draw the container contents and side boundaries
+    for (int i = 0; i < HEIGHT; i++)
+    {
+        std::cout << "| ";
+        for (int j = 0; j < LENGTH; j++)
+        {
+            std::cout << containerItems[i][j]; // Use array values for drawing
+        }
+        std::cout << " |" << std::endl;
+    }
+
+    // Draw the bottom boundary of the container
+    std::cout << "+ ";
+    for (int i = 0; i < LENGTH; i++)
+    {
+        std::cout << '-';
+    }
+    std::cout << " +" << std::endl;
 }
 
 Engine::Engine() : keyPressDelay(Engine::delay) { // Initialize keyPressDelay and lastKeyPressTime
