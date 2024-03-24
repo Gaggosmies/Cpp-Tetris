@@ -23,16 +23,32 @@ void Engine::setBits(uint64_t& container, uint64_t bits) {
     container |= bits;
 }
 
+void Engine::removeFullRows() {
+    uint64_t rowMask = 0xFF; // Mask for the first row.
+    uint64_t newRowContainer = 0; // Container for the new game state.
+    int shiftAmount = 0; // How many rows have been removed.
+
+    for (int i = 0; i < 64; i += 8) {
+        uint64_t currentRow = (gameContainer >> i) & rowMask;
+        if (currentRow != rowMask) { // If the row is not full
+            // Shift this row down by `shiftAmount` rows and add it to `newRowContainer`.
+            newRowContainer |= (currentRow << i) >> (shiftAmount * 8);
+        } else { // If the row is full
+            shiftAmount++; // Increase the number of rows to shift.
+            gamePoints++; // Assuming you have a gamePoints variable to increment.
+        }
+    }
+
+    gameContainer = newRowContainer;
+}
+
+
 
 void Engine::updateBlocks()
 {
     uint64_t temp;
 
-    // Remove the first row if all bits are set
-    while(areAllBitsSet(gameContainer, FIRST_ROW)) {
-        gameContainer = gameContainer >> 8; // remove the last row
-        gamePoints++;
-    }
+    removeFullRows();
 
     // Check for overlap
     if(hasOverlap(gameContainer, blockContainer >> blockMovementSize) || hasOverlap(blockContainer, FIRST_ROW)) {
@@ -148,6 +164,7 @@ bool Engine::handlePressedKey() {
                 temp = temp >> 8;
             }
 
+            // todo: check if block goes out of bounds
             if(!hasOverlap(temp, gameContainer))
             {
                 blockContainer = temp;

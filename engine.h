@@ -64,6 +64,7 @@ private:
     bool areAllBitsSet(uint64_t container, uint64_t mask);
     void clearBits(uint64_t& container, uint64_t bits);
     void setBits(uint64_t& container, uint64_t bits);
+    void removeFullRows();
 };
 
 #endif
