@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-std=c++17 -Wall
+CXXFLAGS=-std=c++17 -Wall -static-libstdc++ -static-libgcc
 TARGET=tetris
 FILES=main.cpp engine.cpp
 
