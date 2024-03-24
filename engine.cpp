@@ -4,7 +4,7 @@
 #include <conio.h> // for _kbhit() and _getch()
 
 void Engine::start() {
-    blockContainer = BASIC_BLOCK_SIDEWAYS;
+    blockContainer = blocks[0].normal;
 }
 
 bool Engine::hasOverlap(uint64_t container, uint64_t bits) {
@@ -40,7 +40,14 @@ void Engine::updateBlocks()
         clearBits(blockContainer, temp);
         setBits(gameContainer, temp);
 
-        blockContainer = BASIC_BLOCK; // new block
+        srand(time(0)); // seed the random number generator with the current time
+        blockNumber = rand() % MAX_BLOCK_NUM; // get a random number between 0 and MAX_BLOCK_NUM-1
+
+        blockContainer = blocks[blockNumber].normal; // new block
+        isSideways = false; // reset sideways
+
+        goneDown = 0;
+        goneRight = 0;
 
         if(hasOverlap(gameContainer, BASIC_BLOCK)) {
             std::cout << "Game Over!" << std::endl;
@@ -52,6 +59,7 @@ void Engine::updateBlocks()
         temp = blockContainer;
         clearBits(blockContainer, temp);
         setBits(blockContainer, temp >> blockMovementSize);
+        goneDown++;
     }
 
     this->drawContainer();
@@ -64,7 +72,7 @@ void Engine::drawContainer()
 
     std::cout << "Points: " << gamePoints << std::endl;
 
-    std::cout << "| ";
+    std::cout << "|";
     for (int i = 0; i < 64; ++i) { // Loop for each bit from 0 to 63
         // Correctly extract the bit using right shift, starting from MSB to LSB
         int bit = (gameContainer >> (63 - i)) & 1;
@@ -77,14 +85,14 @@ void Engine::drawContainer()
         else
         {
             // Print the bit
-            std::cout << bit;
+            std::cout << (bit ? '1' : ' ');
         }
         
         // Print a separator after each byte
         if ((i + 1) % 8 == 0) {
-            std::cout << " |"; // Newline after each row (8 bits)
+            std::cout << "|"; // Newline after each row (8 bits)
             if (i != 63) {
-                std::cout << std::endl << "| "; // Prepare for the next row if not the last bit
+                std::cout << std::endl << "|"; // Prepare for the next row if not the last bit
             }
         }
     }
@@ -114,6 +122,7 @@ bool Engine::handlePressedKey() {
             if(!hasOverlap(blockContainer, LEFT_SIDE) && !hasOverlap(blockContainer << 1, gameContainer))
             {
                 blockContainer = blockContainer << 1;
+                goneRight--;
                 drawContainer();
             }
             break;
@@ -122,12 +131,29 @@ bool Engine::handlePressedKey() {
             if(!hasOverlap(blockContainer, RIGHT_SIDE) && !hasOverlap(blockContainer >> 1, gameContainer))
             {
                 blockContainer = blockContainer >> 1;
+                goneRight++;
                 drawContainer();
             }
             break;
 
-        case 'w':  
-            // todo rotate block
+        case 'w':
+            uint64_t temp;
+            temp = isSideways ? blocks[blockNumber].normal : blocks[blockNumber].sideways; // turn the block
+            for(int i = 0; i < goneRight; i++)
+            {
+                temp = temp >> 1;
+            }
+            for (int i = 0; i < goneDown; i++)
+            {
+                temp = temp >> 8;
+            }
+
+            if(!hasOverlap(temp, gameContainer))
+            {
+                blockContainer = temp;
+                isSideways = !isSideways; // toggle sideways
+                drawContainer();
+            }
             break;
 
         case 's':   
