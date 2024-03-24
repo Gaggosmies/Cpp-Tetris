@@ -4,7 +4,7 @@
 #include <conio.h> // for _kbhit() and _getch()
 
 void Engine::start() {
-    blockContainer = LEFT_SIDE;
+    blockContainer = BASIC_BLOCK_SIDEWAYS;
 }
 
 bool Engine::hasOverlap(uint64_t container, uint64_t bits) {
