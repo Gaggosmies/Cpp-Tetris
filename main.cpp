@@ -5,7 +5,7 @@
 #include <thread>
 
 int main() {
-    int blockDelay = 100; // 500 milliseconds
+    int blockDelay = 200; // milliseconds
     int blockUpdateDelay = 5; // x * blockDelay milliseconds
     int updateBlocks = 0;
 
