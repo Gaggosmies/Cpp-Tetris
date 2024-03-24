@@ -11,6 +11,10 @@ bool Engine::hasOverlap(uint64_t container, uint64_t bits) {
     return (container & bits) != 0;
 }
 
+bool Engine::areAllBitsSet(uint64_t container, uint64_t mask) {
+    return (container & mask) == mask;
+}
+
 void Engine::clearBits(uint64_t& container, uint64_t bits) {
     container &= ~bits;
 }
@@ -23,19 +27,27 @@ void Engine::setBits(uint64_t& container, uint64_t bits) {
 void Engine::updateBlocks()
 {
     uint64_t temp;
+
+    // Remove the first row if all bits are set
+    while(areAllBitsSet(gameContainer, FIRST_ROW)) {
+        gameContainer = gameContainer >> 8; // remove the last row
+        gamePoints++;
+    }
+
     // Check for overlap
-    if(hasOverlap(gameContainer, blockContainer >> blockMovementSize)) {
+    if(hasOverlap(gameContainer, blockContainer >> blockMovementSize) || hasOverlap(blockContainer, FIRST_ROW)) {
         temp = blockContainer;
         clearBits(blockContainer, temp);
         setBits(gameContainer, temp);
-        blockContainer = 0x7000000000000000;
 
-        if(hasOverlap(gameContainer, 0xFF00000000000000)) {
+        blockContainer = BASIC_BLOCK; // new block
+
+        if(hasOverlap(gameContainer, LAST_ROW)) {
             std::cout << "Game Over!" << std::endl;
             exit(0);
         }
     }
-    else
+    else // can move downwards
     {
         temp = blockContainer;
         clearBits(blockContainer, temp);
@@ -48,6 +60,9 @@ void Engine::updateBlocks()
 void Engine::drawContainer()
 {
     system ("CLS"); // Clear the console
+    std::cout << "-- GAGGO TETRIS --" << std::endl;
+
+    std::cout << "Points: " << gamePoints << std::endl;
 
     std::cout << "| ";
     for (int i = 0; i < 64; ++i) { // Loop for each bit from 0 to 63

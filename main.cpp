@@ -9,9 +9,11 @@ int main() {
     int blockUpdateDelay = 5; // x * blockDelay milliseconds
     int updateBlocks = 0; // counter for block update
 
+    system ("CLS"); // Clear the console
+
     Engine gameEngine;
     gameEngine.start(); // todo: implement start() method
-    gameEngine.updateBlocks();
+    gameEngine.drawContainer();
 
     while (true) {
         // handle key presses
